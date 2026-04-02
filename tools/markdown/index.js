@@ -1,3 +1,4 @@
+import { marked } from './marked.esm.js';
 import { openDismissablePanel, dismissDismissablePanels } from '../../app/ui.js';
 
 function updateMarkdown(scratchpad) {

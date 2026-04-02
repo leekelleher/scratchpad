@@ -1,3 +1,5 @@
+import { marked } from '../markdown/marked.esm.js';
+
 export default {
     name: 'copy-formatted',
     action(scratchpad) {
