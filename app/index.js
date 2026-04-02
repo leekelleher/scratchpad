@@ -50,14 +50,18 @@ renderTools(tools, scratchpad);
 
 scratchpad.focus();
 
-Mousetrap.bind('mod+shift+k', function(e) {
-    sidebar.action();
-});
+document.addEventListener('keydown', (e) => {
+    const mod = e.ctrlKey || e.metaKey;
+    if (!mod) return;
 
-Mousetrap.bind('mod+]', function(e) {
-    indentCurrentLine(scratchpad);
-});
-
-Mousetrap.bind('mod+[', function(e) {
-    unindentCurrentLine(scratchpad);
+    if (e.shiftKey && e.key === 'K') {
+        e.preventDefault();
+        sidebar.action();
+    } else if (e.key === ']') {
+        e.preventDefault();
+        indentCurrentLine(scratchpad);
+    } else if (e.key === '[') {
+        e.preventDefault();
+        unindentCurrentLine(scratchpad);
+    }
 });
