@@ -15,7 +15,7 @@
 
     <title>Scratchpad</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="vendor/balloon.css">
+    <link rel="stylesheet" href="tools/write-good/balloon.css">
 </head>
 
 <body class="day">
@@ -31,15 +31,16 @@
     </footer>
 
     <script src="vendor/mousetrap.min.js"></script>
-    <script src="app.js"></script>
 
-    <script src="vendor/write-good.dist.js" async></script>
-    <script src="vendor/marked.min.js" async></script>
+    <script src="tools/write-good/write-good.dist.js" async></script>
+    <script src="tools/markdown/marked.min.js" async></script>
     <script src="vendor/highlight.min.js" async></script>
-    <script src="vendor/jwt-decode.js" async></script>
-    <script src="vendor/eff-short-passphrase.js" async></script>
-    <script src="vendor/prettier.js" async></script>
-    <script src="vendor/prettier-parser-html.js" async></script>
+    <script src="tools/jwt/jwt-decode.js" async></script>
+    <script src="tools/passphrase/eff-short-passphrase.js" async></script>
+    <script src="tools/html-format/prettier.js" async></script>
+    <script src="tools/html-format/prettier-parser-html.js" async></script>
+
+    <script type="module" src="app/index.js"></script>
 </body>
 
 </html>
