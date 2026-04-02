@@ -1,5 +1,5 @@
 import { load, save } from './storage.js';
-import { handleKeyDown, handleKeyUp, indentCurrentLine, unindentCurrentLine } from './editor.js';
+import { handleKeyDown, handleKeyUp } from './editor.js';
 import { renderTools } from './ui.js';
 
 import base64decode from '../tools/base64-decode/index.js';
@@ -57,11 +57,5 @@ document.addEventListener('keydown', (e) => {
     if (e.shiftKey && e.key === 'K') {
         e.preventDefault();
         sidebar.action();
-    } else if (e.key === ']') {
-        e.preventDefault();
-        indentCurrentLine(scratchpad);
-    } else if (e.key === '[') {
-        e.preventDefault();
-        unindentCurrentLine(scratchpad);
     }
 });

@@ -88,8 +88,16 @@ export function handleKeyUp(e, scratchpad) {
 }
 
 export function handleKeyDown(e, scratchpad) {
+    const mod = e.ctrlKey || e.metaKey;
+
     if (e.key === "Tab") {
         e.preventDefault();
         handleTab(e, scratchpad);
+    } else if (mod && e.key === ']') {
+        e.preventDefault();
+        indentCurrentLine(scratchpad);
+    } else if (mod && e.key === '[') {
+        e.preventDefault();
+        unindentCurrentLine(scratchpad);
     }
 }
