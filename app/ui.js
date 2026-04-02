@@ -48,9 +48,9 @@ export function renderTools(tools, scratchpad) {
         if (tool.footer) {
             let a = document.createElement('a');
             a.innerText = "~" + tool.name + "   ";
-            a.onclick = (e) => {
+            a.onclick = async (e) => {
                 e.preventDefault();
-                tool.action(scratchpad);
+                await tool.action(scratchpad);
                 save(scratchpad);
             };
             a.href = "#";
@@ -59,9 +59,9 @@ export function renderTools(tools, scratchpad) {
 
         let a = document.createElement('a');
         a.innerText = "~" + tool.name;
-        a.onclick = (e) => {
+        a.onclick = async (e) => {
             e.preventDefault();
-            tool.action(scratchpad);
+            await tool.action(scratchpad);
             save(scratchpad);
         };
         a.href = "#";
