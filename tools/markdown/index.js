@@ -1,14 +1,21 @@
-import { marked } from './marked.esm.js';
+import { Marked } from './marked.esm.js';
+import { markedHighlight } from './marked-highlight.js';
+import hljs from './highlight.esm.min.js';
 import { openDismissablePanel, dismissDismissablePanels } from '../../app/ui.js';
+
+export const marked = new Marked(
+    markedHighlight({
+        langPrefix: 'hljs language-',
+        highlight(code, lang) {
+            const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+            return hljs.highlight(code, { language }).value;
+        }
+    })
+);
 
 function updateMarkdown(scratchpad) {
     let el = document.querySelector('#markdownOutput');
-    let content = scratchpad.value;
-    el.innerHTML = marked.parse(content, {
-        highlight: (code) => {
-            return hljs.highlightAuto(code).value;
-        }
-    });
+    el.innerHTML = marked.parse(scratchpad.value);
 }
 
 export default {

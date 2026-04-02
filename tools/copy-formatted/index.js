@@ -1,4 +1,4 @@
-import { marked } from '../markdown/marked.esm.js';
+import { marked } from '../markdown/index.js';
 
 export default {
     name: 'copy-formatted',
@@ -7,12 +7,7 @@ export default {
             let el = document.createElement('div');
             el.classList = 'formatted-md';
 
-            let content = scratchpad.value;
-            el.innerHTML = marked.parse(content, {
-                highlight: (code) => {
-                    return hljs.highlightAuto(code).value;
-                }
-            });
+            el.innerHTML = marked.parse(scratchpad.value);
             e.clipboardData.setData("text/html", el.innerHTML);
             e.clipboardData.setData("text/plain", el.innerHTML);
             e.preventDefault();
