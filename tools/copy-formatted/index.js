@@ -6,7 +6,7 @@ export default {
             el.classList = 'formatted-md';
 
             let content = scratchpad.value;
-            el.innerHTML = marked(content, {
+            el.innerHTML = marked.parse(content, {
                 highlight: (code) => {
                     return hljs.highlightAuto(code).value;
                 }

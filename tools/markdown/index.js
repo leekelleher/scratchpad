@@ -3,7 +3,7 @@ import { openDismissablePanel, dismissDismissablePanels } from '../../app/ui.js'
 function updateMarkdown(scratchpad) {
     let el = document.querySelector('#markdownOutput');
     let content = scratchpad.value;
-    el.innerHTML = marked(content, {
+    el.innerHTML = marked.parse(content, {
         highlight: (code) => {
             return hljs.highlightAuto(code).value;
         }
