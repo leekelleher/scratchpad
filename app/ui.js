@@ -40,32 +40,27 @@ export function openDismissablePanel(id) {
     document.querySelector('main').appendChild(el);
 }
 
+function makeToolLink(label, tool, scratchpad) {
+    let a = document.createElement('a');
+    a.innerText = label;
+    a.href = "#";
+    a.onclick = async (e) => {
+        e.preventDefault();
+        await tool.action(scratchpad);
+        save(scratchpad);
+    };
+    return a;
+}
+
 export function renderTools(tools, scratchpad) {
     let toolsEl = document.querySelector("#tools");
     let sidebarEl = document.querySelector("#sidebar");
 
     tools.forEach(tool => {
         if (tool.footer) {
-            let a = document.createElement('a');
-            a.innerText = "~" + tool.name + "   ";
-            a.onclick = async (e) => {
-                e.preventDefault();
-                await tool.action(scratchpad);
-                save(scratchpad);
-            };
-            a.href = "#";
-            toolsEl.appendChild(a);
+            toolsEl.appendChild(makeToolLink("~" + tool.name + "   ", tool, scratchpad));
         }
-
-        let a = document.createElement('a');
-        a.innerText = "~" + tool.name;
-        a.onclick = async (e) => {
-            e.preventDefault();
-            await tool.action(scratchpad);
-            save(scratchpad);
-        };
-        a.href = "#";
-        sidebarEl.appendChild(a);
+        sidebarEl.appendChild(makeToolLink("~" + tool.name, tool, scratchpad));
     });
 
     toolsEl.appendChild(document.createElement("br"));
