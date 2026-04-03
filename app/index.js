@@ -1,5 +1,5 @@
 import { load, save } from './storage.js';
-import { handleKeyDown, handleKeyUp } from './editor.js';
+import { handleKeyDown, handleKeyUp, enterEditMode } from './editor.js';
 import { renderTools } from './ui.js';
 
 import base64decode from '../tools/base64-decode/index.js';
@@ -40,15 +40,17 @@ const tools = [
     writeGood,
 ];
 
-let scratchpad = document.querySelector('#scratchpad');
+const scratchpad = document.getElementById('scratchpad');
 load(scratchpad);
 
 scratchpad.onkeydown = (e) => handleKeyDown(e, scratchpad);
 scratchpad.onkeyup = (e) => handleKeyUp(e, scratchpad);
+scratchpad.onclick = () => enterEditMode();
 
 renderTools(tools, scratchpad);
 
 scratchpad.focus();
+enterEditMode();
 
 document.addEventListener('keydown', (e) => {
     const mod = e.ctrlKey || e.metaKey;

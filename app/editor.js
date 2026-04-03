@@ -1,5 +1,10 @@
 import { save } from './storage.js';
 
+let editMode = false;
+
+export function enterEditMode() { editMode = true; }
+export function exitEditMode() { editMode = false; }
+
 export function getLineNumber(textarea) {
     return textarea.value.substr(0, textarea.selectionStart).split("\n").length - 1;
 }
@@ -90,10 +95,25 @@ export function handleKeyUp(e, scratchpad) {
 export function handleKeyDown(e, scratchpad) {
     const mod = e.ctrlKey || e.metaKey;
 
+    if (e.key === "Escape") {
+        exitEditMode();
+        return;
+    }
+
     if (e.key === "Tab") {
-        e.preventDefault();
-        handleTab(e, scratchpad);
-    } else if (mod && e.key === ']') {
+        if (editMode) {
+            e.preventDefault();
+            handleTab(e, scratchpad);
+        }
+        return;
+    }
+
+    // Any other keypress enters edit mode
+    if (!editMode) {
+        enterEditMode();
+    }
+
+    if (mod && e.key === ']') {
         e.preventDefault();
         indentCurrentLine(scratchpad);
     } else if (mod && e.key === '[') {
