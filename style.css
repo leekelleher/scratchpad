@@ -147,14 +147,13 @@ p {
 
 #sidebar {
     display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
     position: absolute;
     top: 0;
     right: 0;
     padding: 2em;
-}
-
-#sidebar button {
-    display: block;
 }
 
 #markdownOutput {
