@@ -2,7 +2,7 @@ export default {
     name: 'sidebar',
     footer: true,
     action() {
-        let sidebarEl = document.querySelector("#sidebar");
-        sidebarEl.style.display = sidebarEl.style.display == 'block' ? 'none' : 'block';
+        const sidebarEl = document.getElementById("sidebar");
+        sidebarEl.ariaHidden = sidebarEl.ariaHidden === 'false' ? 'true' : 'false';
     }
 };

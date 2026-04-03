@@ -1,22 +1,28 @@
 import { save } from './storage.js';
 
 export function removeError() {
-    let el = document.querySelector('#errors');
+    const el = document.getElementById('errors');
     el.parentNode.removeChild(el);
 }
 
 export function displayError(message) {
-    let el = document.createElement('div');
+    const el = document.createElement('div');
     el.id = "errors";
+    el.role = "alert";
+    el.tabIndex = 0;
     el.innerText = message;
     el.onclick = removeError;
-    document.querySelector('body').appendChild(el);
+    el.onkeydown = (e) => {
+        if (e.key === 'Enter' || e.key === 'Escape') removeError();
+    };
+    document.body.appendChild(el);
+    el.focus();
 }
 
 export function dismissDismissablePanels() {
-    let els = document.getElementsByClassName('dismissable');
+    const els = document.getElementsByClassName('dismissable');
 
-    for (let el of els) {
+    for (const el of els) {
         el.parentNode.removeChild(el);
     }
 }
@@ -24,45 +30,43 @@ export function dismissDismissablePanels() {
 export function openDismissablePanel(id) {
     dismissDismissablePanels();
 
-    let el = document.createElement('div');
+    const el = document.createElement('div');
     el.classList = 'dismissable';
 
-    let closeEl = document.createElement('span');
-    closeEl.innerHTML = 'x';
+    const closeEl = document.createElement('button');
+    closeEl.type = 'button';
+    closeEl.textContent = 'x';
     closeEl.classList = 'close';
+    closeEl.setAttribute('aria-label', 'Close panel');
     closeEl.onclick = dismissDismissablePanels;
     el.appendChild(closeEl);
 
-    let contentEl = document.createElement('div');
+    const contentEl = document.createElement('div');
     contentEl.id = id;
     el.appendChild(contentEl);
 
     document.querySelector('main').appendChild(el);
 }
 
-function makeToolLink(label, tool, scratchpad) {
-    let a = document.createElement('a');
-    a.innerText = label;
-    a.href = "#";
-    a.onclick = async (e) => {
-        e.preventDefault();
+function makeToolButton(label, tool, scratchpad) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = label;
+    btn.onclick = async () => {
         await tool.action(scratchpad);
         save(scratchpad);
     };
-    return a;
+    return btn;
 }
 
 export function renderTools(tools, scratchpad) {
-    let toolsEl = document.querySelector("#tools");
-    let sidebarEl = document.querySelector("#sidebar");
+    const toolsEl = document.getElementById("tools");
+    const sidebarEl = document.getElementById("sidebar");
 
     tools.forEach(tool => {
         if (tool.footer) {
-            toolsEl.appendChild(makeToolLink("~" + tool.name + "   ", tool, scratchpad));
+            toolsEl.appendChild(makeToolButton(tool.name, tool, scratchpad));
         }
-        sidebarEl.appendChild(makeToolLink("~" + tool.name, tool, scratchpad));
+        sidebarEl.appendChild(makeToolButton(tool.name, tool, scratchpad));
     });
-
-    toolsEl.appendChild(document.createElement("br"));
-    toolsEl.appendChild(document.createTextNode("(sidebar: cmd+shift+k)"));
 }

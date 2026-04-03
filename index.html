@@ -18,15 +18,18 @@
 </head>
 
 <body class="day">
-    <div id="sidebar"></div>
+    <nav id="sidebar" aria-label="All tools" aria-hidden="true"></nav>
 
     <main>
-        <textarea name="scratchpad" id="scratchpad" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+        <textarea name="scratchpad" id="scratchpad" aria-label="Scratchpad" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
     </main>
 
     <footer>
         <p>scratchpad.<br><a href="https://github.com/sesh/scratchpad">gh&rarr;</a></p>
-        <p id="tools"></p>
+        <div>
+            <nav id="tools" aria-label="Quick tools"></nav>
+            <span class="hint">(sidebar: cmd+shift+k)</span>
+        </div>
     </footer>
 
     <script type="module" src="app/index.js"></script>
