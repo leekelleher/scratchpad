@@ -63,10 +63,21 @@ function continueListOnNewline(scratchpad) {
     let prev_line = lines[current_line_number - 1];
     prev_line = prev_line.trimLeft();
 
+    let insert = null;
+
     if (["-", "*"].indexOf(prev_line[0]) >= 0) {
+        insert = prev_line[0] + " ";
+    } else {
+        const match = prev_line.match(/^(\d+)\.\s/);
+        if (match) {
+            insert = (parseInt(match[1]) + 1) + ". ";
+        }
+    }
+
+    if (insert) {
         let pos = scratchpad.selectionStart;
-        scratchpad.value = scratchpad.value.slice(0, pos) + prev_line[0] + " " + scratchpad.value.slice(pos);
-        scratchpad.setSelectionRange(pos + 2, pos + 2);
+        scratchpad.value = scratchpad.value.slice(0, pos) + insert + scratchpad.value.slice(pos);
+        scratchpad.setSelectionRange(pos + insert.length, pos + insert.length);
     }
 }
 
