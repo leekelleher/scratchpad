@@ -1,43 +1,25 @@
-import { load, save } from './storage.js';
+import { load } from './storage.js';
 import { handleKeyDown, handleKeyUp, enterEditMode } from './editor.js';
 import { renderTools } from './ui.js';
 
-import base64decode from '../tools/base64-decode/index.js';
-import base64encode from '../tools/base64-encode/index.js';
-import copyFormatted from '../tools/copy-formatted/index.js';
-import dark from '../tools/dark/index.js';
-import download from '../tools/download/index.js';
-import dt from '../tools/dt/index.js';
-import htmlFormat from '../tools/html-format/index.js';
-import jq from '../tools/jq/index.js';
-import jwt from '../tools/jwt/index.js';
-import markdown from '../tools/markdown/index.js';
-import passphrase from '../tools/passphrase/index.js';
-import pw from '../tools/pw/index.js';
-import shuffle from '../tools/shuffle/index.js';
-import sidebar from '../tools/sidebar/index.js';
-import sort from '../tools/sort/index.js';
-import uuid from '../tools/uuid/index.js';
-import writeGood from '../tools/write-good/index.js';
-
 const tools = [
-    base64decode,
-    base64encode,
-    copyFormatted,
-    dark,
-    download,
-    dt,
-    htmlFormat,
-    jq,
-    jwt,
-    markdown,
-    passphrase,
-    pw,
-    shuffle,
-    sidebar,
-    sort,
-    uuid,
-    writeGood,
+    { name: 'base64-decode', action: () => import('../tools/base64-decode/index.js') },
+    { name: 'base64-encode', action: () => import('../tools/base64-encode/index.js') },
+    { name: 'copy-formatted', action: () => import('../tools/copy-formatted/index.js') },
+    { name: 'dark', footer: true, action: () => import('../tools/dark/index.js') },
+    { name: 'dl', footer: true, action: () => import('../tools/download/index.js') },
+    { name: 'dt', footer: true, action: () => import('../tools/dt/index.js') },
+    { name: 'html-format', footer: true, action: () => import('../tools/html-format/index.js') },
+    { name: 'jq', description: 'Format the current scratchpad value as JSON', footer: true, action: () => import('../tools/jq/index.js') },
+    { name: 'jwt', footer: true, action: () => import('../tools/jwt/index.js') },
+    { name: 'md', footer: true, action: () => import('../tools/markdown/index.js') },
+    { name: 'passphrase', description: 'Generate a passphrase using the EFF short word list', action: () => import('../tools/passphrase/index.js') },
+    { name: 'pw', description: 'Generate a random 12 character password', footer: true, action: () => import('../tools/pw/index.js') },
+    { name: 'shuffle', description: 'Shuffle all lines in the scratchpad randomly', action: () => import('../tools/shuffle/index.js') },
+    { name: 'sidebar', footer: true, action: () => import('../tools/sidebar/index.js') },
+    { name: 'sort', description: 'Sort all lines in the scratchpad alphabetically', action: () => import('../tools/sort/index.js') },
+    { name: 'uuid', footer: true, action: () => import('../tools/uuid/index.js') },
+    { name: 'write-good', action: () => import('../tools/write-good/index.js') },
 ];
 
 const scratchpad = document.getElementById('scratchpad');
@@ -52,15 +34,17 @@ renderTools(tools, scratchpad);
 scratchpad.focus();
 enterEditMode();
 
-document.addEventListener('keydown', (e) => {
+document.addEventListener('keydown', async (e) => {
     const mod = e.ctrlKey || e.metaKey;
     if (!mod) return;
 
     if (e.shiftKey && e.key === 'K') {
         e.preventDefault();
-        sidebar.action();
+        const { default: toggleSidebar } = await import('../tools/sidebar/index.js');
+        toggleSidebar();
     } else if (e.key === 's') {
         e.preventDefault();
-        download.action(scratchpad);
+        const { default: download } = await import('../tools/download/index.js');
+        download(scratchpad);
     }
 });

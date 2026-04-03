@@ -18,19 +18,15 @@ function updateMarkdown(scratchpad) {
     el.innerHTML = marked.parse(scratchpad.value);
 }
 
-export default {
-    name: 'md',
-    footer: true,
-    action(scratchpad) {
-        let el = document.querySelector('#markdownOutput');
+export default function(scratchpad) {
+    let el = document.querySelector('#markdownOutput');
 
-        if (!el) {
-            openDismissablePanel('markdownOutput');
-            updateMarkdown(scratchpad);
-            scratchpad.onsave = updateMarkdown;
-        } else {
-            dismissDismissablePanels();
-            scratchpad.onsave = null;
-        }
+    if (!el) {
+        openDismissablePanel('markdownOutput');
+        updateMarkdown(scratchpad);
+        scratchpad.onsave = updateMarkdown;
+    } else {
+        dismissDismissablePanels();
+        scratchpad.onsave = null;
     }
-};
+}
