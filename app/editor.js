@@ -16,6 +16,33 @@ export function replaceSelection(textarea, value) {
     textarea.setSelectionRange(pos + value.length, pos + value.length);
 }
 
+function wrapSelection(textarea, wrapper) {
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const len = wrapper.length;
+
+    const before = text.slice(start - len, start);
+    const after = text.slice(end, end + len);
+
+    if (before === wrapper && after === wrapper) {
+        textarea.value = text.slice(0, start - len) + text.slice(start, end) + text.slice(end + len);
+        textarea.focus();
+        textarea.setSelectionRange(start - len, end - len);
+    } else {
+        const selected = text.slice(start, end);
+        textarea.value = text.slice(0, start) + wrapper + selected + wrapper + text.slice(end);
+        textarea.focus();
+
+        if (selected.length > 0) {
+            textarea.setSelectionRange(start + len, end + len);
+        } else {
+            const cursor = start + len;
+            textarea.setSelectionRange(cursor, cursor);
+        }
+    }
+}
+
 function indentNewline(scratchpad) {
     let lines = scratchpad.value.split("\n");
     let current_line_number = getLineNumber(scratchpad)
@@ -119,5 +146,11 @@ export function handleKeyDown(e, scratchpad) {
     } else if (mod && e.key === '[') {
         e.preventDefault();
         unindentCurrentLine(scratchpad);
+    } else if (mod && e.key === 'b') {
+        e.preventDefault();
+        wrapSelection(scratchpad, '**');
+    } else if (mod && e.key === 'i') {
+        e.preventDefault();
+        wrapSelection(scratchpad, '_');
     }
 }
