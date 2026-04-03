@@ -1,12 +1,12 @@
 import { save } from './storage.js';
 
 export function removeError() {
-    let el = document.querySelector('#errors');
+    const el = document.getElementById('errors');
     el.parentNode.removeChild(el);
 }
 
 export function displayError(message) {
-    let el = document.createElement('div');
+    const el = document.createElement('div');
     el.id = "errors";
     el.role = "alert";
     el.tabIndex = 0;
@@ -15,14 +15,14 @@ export function displayError(message) {
     el.onkeydown = (e) => {
         if (e.key === 'Enter' || e.key === 'Escape') removeError();
     };
-    document.querySelector('body').appendChild(el);
+    document.body.appendChild(el);
     el.focus();
 }
 
 export function dismissDismissablePanels() {
-    let els = document.getElementsByClassName('dismissable');
+    const els = document.getElementsByClassName('dismissable');
 
-    for (let el of els) {
+    for (const el of els) {
         el.parentNode.removeChild(el);
     }
 }
@@ -30,10 +30,10 @@ export function dismissDismissablePanels() {
 export function openDismissablePanel(id) {
     dismissDismissablePanels();
 
-    let el = document.createElement('div');
+    const el = document.createElement('div');
     el.classList = 'dismissable';
 
-    let closeEl = document.createElement('button');
+    const closeEl = document.createElement('button');
     closeEl.type = 'button';
     closeEl.textContent = 'x';
     closeEl.classList = 'close';
@@ -41,7 +41,7 @@ export function openDismissablePanel(id) {
     closeEl.onclick = dismissDismissablePanels;
     el.appendChild(closeEl);
 
-    let contentEl = document.createElement('div');
+    const contentEl = document.createElement('div');
     contentEl.id = id;
     el.appendChild(contentEl);
 
@@ -49,7 +49,7 @@ export function openDismissablePanel(id) {
 }
 
 function makeToolButton(label, tool, scratchpad) {
-    let btn = document.createElement('button');
+    const btn = document.createElement('button');
     btn.type = 'button';
     btn.textContent = label;
     btn.onclick = async () => {
@@ -60,8 +60,8 @@ function makeToolButton(label, tool, scratchpad) {
 }
 
 export function renderTools(tools, scratchpad) {
-    let toolsEl = document.querySelector("#tools");
-    let sidebarEl = document.querySelector("#sidebar");
+    const toolsEl = document.getElementById("tools");
+    const sidebarEl = document.getElementById("sidebar");
 
     tools.forEach(tool => {
         if (tool.footer) {
@@ -69,5 +69,4 @@ export function renderTools(tools, scratchpad) {
         }
         sidebarEl.appendChild(makeToolButton(tool.name, tool, scratchpad));
     });
-
 }
