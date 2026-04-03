@@ -59,5 +59,8 @@ document.addEventListener('keydown', (e) => {
     if (e.shiftKey && e.key === 'K') {
         e.preventDefault();
         sidebar.action();
+    } else if (e.key === 's') {
+        e.preventDefault();
+        download.action(scratchpad);
     }
 });
