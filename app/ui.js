@@ -53,7 +53,8 @@ function makeToolButton(label, tool, scratchpad) {
     btn.type = 'button';
     btn.textContent = label;
     btn.onclick = async () => {
-        await tool.action(scratchpad);
+        const { default: action } = await tool.action();
+        await action(scratchpad);
         save(scratchpad);
     };
     return btn;

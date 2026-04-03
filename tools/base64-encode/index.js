@@ -1,6 +1,3 @@
-export default {
-    name: 'base64-encode',
-    action(scratchpad) {
-        scratchpad.value = btoa(scratchpad.value);
-    }
-};
+export default function(scratchpad) {
+    scratchpad.value = btoa(scratchpad.value);
+}

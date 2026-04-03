@@ -1,6 +1,3 @@
-export default {
-    name: 'base64-decode',
-    action(scratchpad) {
-        scratchpad.value = atob(scratchpad.value);
-    }
-};
+export default function(scratchpad) {
+    scratchpad.value = atob(scratchpad.value);
+}

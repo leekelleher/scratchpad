@@ -13,12 +13,8 @@ function shuffle(array) {
     return array;
 }
 
-export default {
-    name: 'shuffle',
-    description: 'Shuffle all lines in the scratchpad randomly',
-    action(scratchpad) {
-        let lines = scratchpad.value.split("\n");
-        lines = shuffle(lines);
-        scratchpad.value = lines.join("\n");
-    }
-};
+export default function(scratchpad) {
+    let lines = scratchpad.value.split("\n");
+    lines = shuffle(lines);
+    scratchpad.value = lines.join("\n");
+}

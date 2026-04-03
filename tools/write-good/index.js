@@ -19,18 +19,15 @@ function updateWriteGood(scratchpad) {
     el.innerHTML = html;
 }
 
-export default {
-    name: 'write-good',
-    action(scratchpad) {
-        let el = document.querySelector('#writeGoodOutput');
+export default function(scratchpad) {
+    let el = document.querySelector('#writeGoodOutput');
 
-        if (!el) {
-            openDismissablePanel('writeGoodOutput')
-            updateWriteGood(scratchpad);
-            scratchpad.onsave = updateWriteGood;
-        } else {
-            dismissDismissablePanels();
-            scratchpad.onsave = null;
-        }
+    if (!el) {
+        openDismissablePanel('writeGoodOutput')
+        updateWriteGood(scratchpad);
+        scratchpad.onsave = updateWriteGood;
+    } else {
+        dismissDismissablePanels();
+        scratchpad.onsave = null;
     }
-};
+}
