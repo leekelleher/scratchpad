@@ -3,8 +3,6 @@ export default {
     footer: true,
     action() {
         const sidebarEl = document.getElementById("sidebar");
-        const isOpen = sidebarEl.style.display == 'flex';
-        sidebarEl.style.display = isOpen ? 'none' : 'flex';
-        sidebarEl.setAttribute('aria-hidden', isOpen ? 'true' : 'false');
+        sidebarEl.ariaHidden = sidebarEl.ariaHidden === 'false' ? 'true' : 'false';
     }
 };
