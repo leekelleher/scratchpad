@@ -3,6 +3,8 @@ export default {
     footer: true,
     action() {
         let sidebarEl = document.querySelector("#sidebar");
-        sidebarEl.style.display = sidebarEl.style.display == 'block' ? 'none' : 'block';
+        let isOpen = sidebarEl.style.display == 'block';
+        sidebarEl.style.display = isOpen ? 'none' : 'block';
+        sidebarEl.setAttribute('aria-hidden', isOpen ? 'true' : 'false');
     }
 };

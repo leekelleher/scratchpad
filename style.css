@@ -111,6 +111,8 @@ p {
 #tools {
     text-align: right;
     color: #868e96;
+    margin-top: 0;
+    margin-bottom: 1.4em;
 }
 
 #tools button,
