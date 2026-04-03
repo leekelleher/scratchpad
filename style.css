@@ -1,3 +1,34 @@
+:root {
+    color-scheme: light dark;
+
+    /* Solarized base */
+    --color-bg: light-dark(#eee8d5, #002b36);
+    --color-fg: light-dark(#002b36, #eee8d5);
+
+    /* UI accents */
+    --color-link: #268bd2;
+    --color-error: #cb4b16;
+    --color-highlight: light-dark(#d33682, #657b83);
+    --color-hint: #868e96;
+
+    /* Syntax highlighting (Solarized) */
+    --color-hljs-bg: light-dark(#fdf6e3, #002b36);
+    --color-hljs-fg: light-dark(#657b83, #839496);
+    --color-hljs-comment: light-dark(#93a1a1, #586e75);
+    --color-hljs-formula-bg: light-dark(#eee8d5, #073642);
+    --color-hljs-green: #859900;
+    --color-hljs-cyan: #2aa198;
+    --color-hljs-blue: #268bd2;
+    --color-hljs-yellow: #b58900;
+    --color-hljs-orange: #cb4b16;
+    --color-hljs-red: #dc322f;
+
+    /* Balloon tooltips (write-good) */
+    --balloon-color: rgba(16, 16, 16, 0.95);
+    --balloon-font-size: 12px;
+    --balloon-move: 4px;
+}
+
 body,
 html {
     margin: 0;
@@ -7,14 +38,9 @@ html {
     line-height: 1.4em;
 }
 
-body.night {
-    background-color: #002b36;
-    color: #eee8d5;
-}
-
-body.day {
-    background-color: #eee8d5;
-    color: #002b36;
+body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
 }
 
 #errors {
@@ -24,13 +50,13 @@ body.day {
     width: 40%;
     min-width: 33em;
     padding: 6px;
-    background-color: #cb4b16;
+    background-color: var(--color-error);
     color: white;
 }
 
 a,
 a:visited {
-    color: #268bd2;
+    color: var(--color-link);
     text-decoration: none;
 }
 
@@ -95,12 +121,8 @@ textarea.placeholder {
 }
 
 .highlight {
-    background-color: #d33682;
+    background-color: var(--color-highlight);
     padding: 2px;
-}
-
-body.night .highlight {
-    background-color: #657b83;
 }
 
 p {
@@ -120,7 +142,7 @@ p {
 .hint {
     display: block;
     text-align: right;
-    color: #868e96;
+    color: var(--color-hint);
 }
 
 #tools button,
@@ -128,7 +150,7 @@ p {
     background: none;
     border: none;
     font: inherit;
-    color: #268bd2;
+    color: var(--color-link);
     cursor: pointer;
     padding: 0;
     text-decoration: none;
@@ -173,13 +195,13 @@ p {
     display: block;
     overflow-x: auto;
     padding: 0.5em;
-    background: #fdf6e3;
-    color: #657b83;
+    background: var(--color-hljs-bg);
+    color: var(--color-hljs-fg);
 }
 
 .hljs-comment,
 .hljs-quote {
-    color: #93a1a1;
+    color: var(--color-hljs-comment);
 }
 
 .outlook-md {
@@ -199,9 +221,8 @@ p {
 .hljs-keyword,
 .hljs-selector-tag,
 .hljs-addition {
-    color: #859900;
+    color: var(--color-hljs-green);
 }
-
 
 /* Solarized Cyan */
 
@@ -211,9 +232,8 @@ p {
 .hljs-literal,
 .hljs-doctag,
 .hljs-regexp {
-    color: #2aa198;
+    color: var(--color-hljs-cyan);
 }
-
 
 /* Solarized Blue */
 
@@ -222,9 +242,8 @@ p {
 .hljs-name,
 .hljs-selector-id,
 .hljs-selector-class {
-    color: #268bd2;
+    color: var(--color-hljs-blue);
 }
-
 
 /* Solarized Yellow */
 
@@ -234,9 +253,8 @@ p {
 .hljs-template-variable,
 .hljs-class .hljs-title,
 .hljs-type {
-    color: #b58900;
+    color: var(--color-hljs-yellow);
 }
-
 
 /* Solarized Orange */
 
@@ -248,19 +266,18 @@ p {
 .hljs-selector-attr,
 .hljs-selector-pseudo,
 .hljs-link {
-    color: #cb4b16;
+    color: var(--color-hljs-orange);
 }
-
 
 /* Solarized Red */
 
 .hljs-built_in,
 .hljs-deletion {
-    color: #dc322f;
+    color: var(--color-hljs-red);
 }
 
 .hljs-formula {
-    background: #eee8d5;
+    background: var(--color-hljs-formula-bg);
 }
 
 .hljs-emphasis {
@@ -271,102 +288,8 @@ p {
     font-weight: bold;
 }
 
-
-/* --- Dark --- */
-
-body.night .hljs {
-    display: block;
-    overflow-x: auto;
-    padding: 0.5em;
-    background: #002b36;
-    color: #839496;
-}
-
-body.night .hljs-comment,
-body.night .hljs-quote {
-    color: #586e75;
-}
-
-
-/* Solarized Green */
-
-body.night .hljs-keyword,
-body.night .hljs-selector-tag,
-body.night .hljs-addition {
-    color: #859900;
-}
-
-
-/* Solarized Cyan */
-
-body.night .hljs-number,
-body.night .hljs-string,
-body.night .hljs-meta .hljs-meta-string,
-body.night .hljs-literal,
-body.night .hljs-doctag,
-body.night .hljs-regexp {
-    color: #2aa198;
-}
-
-
-/* Solarized Blue */
-
-body.night .hljs-title,
-body.night .hljs-section,
-body.night .hljs-name,
-body.night .hljs-selector-id,
-body.night .hljs-selector-class {
-    color: #268bd2;
-}
-
-
-/* Solarized Yellow */
-
-body.night .hljs-attribute,
-body.night .hljs-attr,
-body.night .hljs-variable,
-body.night .hljs-template-variable,
-body.night .hljs-class .hljs-title,
-body.night .hljs-type {
-    color: #b58900;
-}
-
-
-/* Solarized Orange */
-
-body.night .hljs-symbol,
-body.night .hljs-bullet,
-body.night .hljs-subst,
-body.night .hljs-meta,
-body.night .hljs-meta .hljs-keyword,
-body.night .hljs-selector-attr,
-body.night .hljs-selector-pseudo,
-body.night .hljs-link {
-    color: #cb4b16;
-}
-
-
-/* Solarized Red */
-
-body.night .hljs-built_in,
-body.night .hljs-deletion {
-    color: #dc322f;
-}
-
-body.night .hljs-formula {
-    background: #073642;
-}
-
-body.night .hljs-emphasis {
-    font-style: italic;
-}
-
-body.night .hljs-strong {
-    font-weight: bold;
-}
-
 @media print {
-    body.night, body.day {
+    body {
         background-color: transparent;
         color: #000000;
     }
@@ -378,11 +301,6 @@ body.night .hljs-strong {
 
 
 /* --- Balloon tooltips (write-good) --- */
-
-:root {
-  --balloon-color: rgba(16, 16, 16, 0.95);
-  --balloon-font-size: 12px;
-  --balloon-move: 4px; }
 
 [aria-label][data-balloon-pos] {
   position: relative;
