@@ -113,9 +113,14 @@ p {
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: 0.75em;
-    color: #868e96;
     margin-top: 0;
-    margin-bottom: 1.4em;
+    margin-bottom: 0;
+}
+
+.hint {
+    display: block;
+    text-align: right;
+    color: #868e96;
 }
 
 #tools button,

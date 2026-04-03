@@ -70,9 +70,4 @@ export function renderTools(tools, scratchpad) {
         sidebarEl.appendChild(makeToolButton(tool.name, tool, scratchpad));
     });
 
-    let hint = document.createElement('span');
-    hint.textContent = "(sidebar: cmd+shift+k)";
-    hint.style.width = "100%";
-		hint.style.textAlign = "right";
-    toolsEl.appendChild(hint);
 }
