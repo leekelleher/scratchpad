@@ -1,4 +1,4 @@
-let wordlist = [
+const wordlist = [
 "acid",
 "acorn",
 "acre",
@@ -1297,11 +1297,11 @@ let wordlist = [
 "zoom"
 ];
 
-function randomChoice(arr) {
+export function randomChoice(arr) {
     return arr[Math.floor(arr.length * Math.random())];
 }
 
-function generatePassphrase() {
+export default function generatePassphrase() {
     return [
         randomChoice(wordlist),
         randomChoice(wordlist),

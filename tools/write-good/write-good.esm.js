@@ -1,145 +1,140 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.writeGood = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+// write-good ESM module
+// Converted from https://github.com/btford/write-good (v1.0.8)
+// MIT License
+
+// --- Shared helper ---
+
+function matcher(regex, text) {
+    const results = [];
+    let result = regex.exec(text);
+
+    while (result) {
+        results.push({ index: result.index, offset: result[0].length });
+        result = regex.exec(text);
+    }
+
+    return results;
+}
+
+// --- annotate ---
+
 function repeatChar(ch, times) {
-  let str = '';
-  for (let i = times; i > 0; i--) {
-    str += ch;
-  }
-  return str;
+    let str = '';
+    for (let i = times; i > 0; i--) {
+        str += ch;
+    }
+    return str;
 }
 
 function generateStartOfLineIndex(line, lines) {
-  const x = lines.slice(0);
-  x.splice(line - 1);
-  return x.join('\n').length + (x.length > 0);
+    const x = lines.slice(0);
+    x.splice(line - 1);
+    return x.join('\n').length + (x.length > 0);
 }
 
 function findLineColumn(contents, lines, index) {
-  const line = contents.substr(0, index).split('\n').length;
-  const startOfLineIndex = generateStartOfLineIndex(line, lines);
-  const col = index - startOfLineIndex;
+    const line = contents.substr(0, index).split('\n').length;
+    const startOfLineIndex = generateStartOfLineIndex(line, lines);
+    const col = index - startOfLineIndex;
 
-  return { line, col };
+    return { line, col };
 }
 
-// annotate file contents with suggestions
-module.exports = function annotate(contents, suggestions, parse) {
-  const lines = contents.split('\n');
+export function annotate(contents, suggestions, parse) {
+    const lines = contents.split('\n');
 
-  return suggestions.map((suggestion) => {
-    const lineColumn = findLineColumn(contents, lines, suggestion.index);
+    return suggestions.map((suggestion) => {
+        const lineColumn = findLineColumn(contents, lines, suggestion.index);
 
-    let fix = 0;
+        let fix = 0;
 
-    if (lineColumn.col > 25) {
-      fix = lineColumn.col - 25;
+        if (lineColumn.col > 25) {
+            fix = lineColumn.col - 25;
+        }
+
+        if (parse) {
+            return {
+                reason: suggestion.reason,
+                line: lineColumn.line,
+                col: lineColumn.col,
+            };
+        }
+        const lineSegment = lines[lineColumn.line - 1].substr(fix, 80);
+
+        return [
+            lineSegment,
+            repeatChar(' ', lineColumn.col - fix) + repeatChar('^', suggestion.offset),
+            `${suggestion.reason} on line ${lineColumn.line} at column ${lineColumn.col}`
+        ].join('\n');
+    });
+}
+
+// --- lexical illusions ---
+
+const lexicalIllusionsRe = new RegExp('(\\s*)([^\\s]+)', 'gi');
+const lexicalIllusionsWord = /\w+/;
+
+function lexicalIllusions(text) {
+    const suggestions = [];
+    let lastMatch = '';
+    let match;
+
+    while (match = lexicalIllusionsRe.exec(text)) {
+        if (lexicalIllusionsWord.test(match[2]) && match[2].toLowerCase() === lastMatch) {
+            suggestions.push({
+                index: match.index + match[1].length,
+                offset: match[2].length
+            });
+        }
+        lastMatch = match[2].toLowerCase();
     }
 
-    if (parse) {
-      return {
-        reason: suggestion.reason,
-        line: lineColumn.line,
-        col: lineColumn.col,
-      };
-    }
-    const lineSegment = lines[lineColumn.line - 1].substr(fix, 80);
+    return suggestions;
+}
 
-    return [
-      lineSegment,
-      repeatChar(' ', lineColumn.col - fix) + repeatChar('^', suggestion.offset),
-      `${suggestion.reason} on line ${lineColumn.line} at column ${lineColumn.col}`
-    ].join('\n');
-  });
-};
+// --- starts with so ---
 
-},{}],2:[function(require,module,exports){
-// via http://matt.might.net/articles/shell-scripts-for-passive-voice-weasel-words-duplicates/
-
-// Example:
-// Many readers are not aware that the
-// the brain will automatically ignore
-// a second instance of the word "the"
-// when it starts a new line.
-const re = new RegExp('(\\s*)([^\\s]+)', 'gi');
-const word = /\w+/;
-
-module.exports = function lexicalIllusions(text) {
-  const suggestions = [];
-  let lastMatch = '';
-  let match;
-
-  // eslint-disable-next-line no-cond-assign
-  while (match = re.exec(text)) {
-    if (word.test(match[2]) && match[2].toLowerCase() === lastMatch) {
-      suggestions.push({
-        index: match.index + match[1].length,
-        offset: match[2].length
-      });
-    }
-    lastMatch = match[2].toLowerCase();
-  }
-
-  return suggestions;
-};
-
-},{}],3:[function(require,module,exports){
-/* eslint-disable no-cond-assign */
-
-// Opinion: I think it's gross to start written English independent clauses with "so"
-//          most of the time. Maybe it's okay in spoken English.
-//
-// More on "so:"
-// * http://www.nytimes.com/2010/05/22/us/22iht-currents.html?_r=0
-// * http://comminfo.rutgers.edu/images/comprofiler/plug_profilegallery/84/pg_2103855866.pdf
-
-// this implementation is really naive
-// eslint-disable-next-line no-control-regex
-const re = new RegExp('([^\n\\.;!?]+)([\\.;!?]+)', 'gi');
+const soRe = new RegExp('([^\n\\.;!?]+)([\\.;!?]+)', 'gi');
 const startsWithSoRegex = new RegExp('^(\\s)*so\\b[\\s\\S]', 'i');
 
-module.exports = function startsWithSo(text) {
-  const suggestions = [];
-  let match;
-  let innerMatch;
+function startsWithSo(text) {
+    const suggestions = [];
+    let match;
+    let innerMatch;
 
-  while (match = re.exec(text)) {
-    if (innerMatch = startsWithSoRegex.exec(match[1])) {
-      suggestions.push({
-        index: match.index + (innerMatch[1] || '').length,
-        offset: 2
-      });
+    while (match = soRe.exec(text)) {
+        if (innerMatch = startsWithSoRegex.exec(match[1])) {
+            suggestions.push({
+                index: match.index + (innerMatch[1] || '').length,
+                offset: 2
+            });
+        }
     }
-  }
-  return suggestions;
-};
+    return suggestions;
+}
 
-},{}],4:[function(require,module,exports){
-/* eslint-disable no-cond-assign */
+// --- there is ---
 
-// Opinion: I think it's gross to start written English sentences with "there (is|are)"
-//          (most of the time)
-
-// this implementation is really naive
-// eslint-disable-next-line no-control-regex
-const re = new RegExp('([^\n\\.;!?]+)([\\.;!?]+)', 'gi');
+const thereIsRe = new RegExp('([^\n\\.;!?]+)([\\.;!?]+)', 'gi');
 const startsWithThereIsRegex = new RegExp('^(\\s)*there\\b\\s(is|are)\\b', 'i');
 
-module.exports = function startsWithThereIs(text) {
-  const suggestions = [];
-  let match;
-  let innerMatch;
+function startsWithThereIs(text) {
+    const suggestions = [];
+    let match;
+    let innerMatch;
 
-  while (match = re.exec(text)) {
-    if (innerMatch = startsWithThereIsRegex.exec(match[1])) {
-      suggestions.push({
-        index: match.index + (innerMatch[1] || '').length,
-        offset: innerMatch[0].length - (innerMatch[1] || '').length
-      });
+    while (match = thereIsRe.exec(text)) {
+        if (innerMatch = startsWithThereIsRegex.exec(match[1])) {
+            suggestions.push({
+                index: match.index + (innerMatch[1] || '').length,
+                offset: innerMatch[0].length - (innerMatch[1] || '').length
+            });
+        }
     }
-  }
-  return suggestions;
-};
+    return suggestions;
+}
 
-},{}],5:[function(require,module,exports){
+// --- adverbs ---
 const adverbs = [
   'absolutel',
   'accidentall',
@@ -340,40 +335,25 @@ const adverbs = [
 ];
 
 const weakens = [
-  'just',
-  'maybe',
-  'stuff',
-  'things'
+    'just',
+    'maybe',
+    'stuff',
+    'things'
 ];
 
 const adverbRegex = new RegExp(
-  `${'\\b('
-  + '('}${adverbs.join('|')})(y)`
-  + `|(${weakens.join('|')}))\\b`, 'gi'
+    `${'\\b('
+    + '('}${adverbs.join('|')})(y)`
+    + `|(${weakens.join('|')}))\\b`, 'gi'
 );
-const matcher = require('./matcher');
 
-module.exports = function matchAdverbs(text) {
-  return matcher(adverbRegex, text);
-};
-
-},{"./matcher":6}],6:[function(require,module,exports){
-function matcher(regex, text) {
-  const results = [];
-  let result = regex.exec(text);
-
-  while (result) {
-    results.push({ index: result.index, offset: result[0].length });
-    result = regex.exec(text);
-  }
-
-  return results;
+function matchAdverbs(text) {
+    return matcher(adverbRegex, text);
 }
 
-module.exports = matcher;
+// --- e-prime ---
 
-},{}],7:[function(require,module,exports){
-var toBe = [
+const toBe = [
     'am',
     'are',
     'aren\'t',
@@ -402,13 +382,14 @@ var toBe = [
     'you\'re'
 ];
 
-var re = new RegExp('\\b(' + toBe.join('|') + ')\\b', 'gi');
+const ePrimeRe = new RegExp('\\b(' + toBe.join('|') + ')\\b', 'gi');
 
-module.exports = function (text) {
+function ePrime(text) {
     var suggestions = [];
     if (!text || text.length === 0) return suggestions;
-    text = text.replace(/[\u2018\u2019]/g, "'"); // convert smart quotes
-    while (match = re.exec(text)) {
+    text = text.replace(/[\u2018\u2019]/g, "'");
+    var match;
+    while (match = ePrimeRe.exec(text)) {
         var be = match[0].toLowerCase();
         suggestions.push({
             index: match.index,
@@ -417,8 +398,9 @@ module.exports = function (text) {
     }
 
     return suggestions;
-};
-},{}],8:[function(require,module,exports){
+}
+
+// --- cliches ---
 const cliches = [
   'a chip off the old block',
   'a clean slate',
@@ -1120,15 +1102,12 @@ const cliches = [
 ];
 
 const clicheRegex = new RegExp(`\\b(${cliches.join('|')})\\b`, 'gi');
-const matcher = require('./matcher');
 
-module.exports = function clichesMatcher(text) {
-  return matcher(clicheRegex, text);
-};
+function clichesMatcher(text) {
+    return matcher(clicheRegex, text);
+}
 
-},{"./matcher":9}],9:[function(require,module,exports){
-arguments[4][6][0].apply(exports,arguments)
-},{"dup":6}],10:[function(require,module,exports){
+// --- passive voice ---
 var irregulars = [
   'awoken',
   'been',
@@ -1307,39 +1286,35 @@ var irregulars = [
   'written'
 ];
 
-var exceptions = [
-  'indeed',
+const passiveExceptions = [
+    'indeed',
 ];
 
-var re = new RegExp('\\b(am|are|were|being|is|been|was|be)\\b\\s*([\\w]+ed|' + irregulars.join('|') + ')\\b', 'gi');
-var byRe; // lazly construct
+const passiveRe = new RegExp('\\b(am|are|were|being|is|been|was|be)\\b\\s*([\\w]+ed|' + irregulars.join('|') + ')\\b', 'gi');
+var passiveByRe;
 
-module.exports = function (text, options) {
-  var r = (options && options.by) ?
-          (byRe || constructByRe()) : re; // not sorry
+function passiveVoice(text, options) {
+    var r = (options && options.by) ?
+        (passiveByRe || constructPassiveByRe()) : passiveRe;
 
-  var suggestions = [];
-  while (match = r.exec(text)) {
-    if (exceptions.indexOf(match[2].toLowerCase()) === -1) {
-      suggestions.push({
-        index: match.index,
-        offset: match[0].length
-      });
+    var suggestions = [];
+    var match;
+    while (match = r.exec(text)) {
+        if (passiveExceptions.indexOf(match[2].toLowerCase()) === -1) {
+            suggestions.push({
+                index: match.index,
+                offset: match[0].length
+            });
+        }
     }
-  }
-  return suggestions;
+    return suggestions;
 }
 
-// lol
-function constructByRe () {
-  return byRe = new RegExp(re.toString().slice(1, -3) + '\\s*by\\b', 'gi');
+function constructPassiveByRe() {
+    return passiveByRe = new RegExp(passiveRe.toString().slice(1, -3) + '\\s*by\\b', 'gi');
 }
 
-},{}],11:[function(require,module,exports){
-arguments[4][6][0].apply(exports,arguments)
-},{"dup":6}],12:[function(require,module,exports){
-const matcher = require('./matcher');
-
+// --- too wordy ---
 const wordyWords = [
   'a number of',
   'abundance',
@@ -1561,11 +1536,11 @@ const wordyWords = [
 
 const wordyRegex = new RegExp(`\\b(${wordyWords.join('|')})\\b`, 'gi');
 
-module.exports = function isTextWordy(text) {
-  return matcher(wordyRegex, text);
-};
+function isTextWordy(text) {
+    return matcher(wordyRegex, text);
+}
 
-},{"./matcher":11}],13:[function(require,module,exports){
+// --- weasel words ---
 var weasels = [
   'are a number',
   'clearly',
@@ -1595,142 +1570,124 @@ var weasels = [
   'very'
 ];
 
-// Allow "too many" and "too few"
-var exceptions = [
-  'many',
-  'few'
-]
+const weaselExceptions = [
+    'many',
+    'few'
+];
 
-var re = new RegExp('\\b(' + weasels.join('|') + ')\\b', 'gi');
+const weaselRe = new RegExp('\\b(' + weasels.join('|') + ')\\b', 'gi');
 
-module.exports = function (text, opts) {
-  var suggestions = [];
-  while (match = re.exec(text)) {
-    var weasel = match[0].toLowerCase();
-    if (exceptions.indexOf(weasel) === -1 ||
-        text.substr(match.index-4, 4) !== 'too ') {
-      suggestions.push({
-        index: match.index,
-        offset: weasel.length,
-      });
+function weaselWords(text) {
+    var suggestions = [];
+    var match;
+    while (match = weaselRe.exec(text)) {
+        var weasel = match[0].toLowerCase();
+        if (weaselExceptions.indexOf(weasel) === -1 ||
+            text.substr(match.index - 4, 4) !== 'too ') {
+            suggestions.push({
+                index: match.index,
+                offset: weasel.length,
+            });
+        }
     }
-  }
-  return suggestions;
-};
+    return suggestions;
+}
 
-},{}],14:[function(require,module,exports){
-const weaselWords = require('weasel-words');
-const passiveVoice = require('passive-voice');
-const adverbWhere = require('adverb-where');
-const tooWordy = require('too-wordy');
-const noCliches = require('no-cliches');
-const ePrime = require('e-prime');
-
-const lexicalIllusions = require('./lib/lexical-illusions');
-const startsWithSo = require('./lib/starts-with-so');
-const thereIs = require('./lib/there-is');
+// --- main: writeGood ---
 
 const defaultChecks = {
-  weasel: { fn: weaselWords, explanation: 'is a weasel word' },
-  illusion: { fn: lexicalIllusions, explanation: 'is repeated' },
-  so: { fn: startsWithSo, explanation: 'adds no meaning' },
-  thereIs: { fn: thereIs, explanation: 'is unnecessary verbiage' },
-  passive: { fn: passiveVoice, explanation: 'may be passive voice' },
-  adverb: { fn: adverbWhere, explanation: 'can weaken meaning' },
-  tooWordy: { fn: tooWordy, explanation: 'is wordy or unneeded' },
-  cliches: { fn: noCliches, explanation: 'is a cliche' },
-  eprime: { fn: ePrime, explanation: 'is a form of \'to be\'' }
+    weasel: { fn: weaselWords, explanation: 'is a weasel word' },
+    illusion: { fn: lexicalIllusions, explanation: 'is repeated' },
+    so: { fn: startsWithSo, explanation: 'adds no meaning' },
+    thereIs: { fn: startsWithThereIs, explanation: 'is unnecessary verbiage' },
+    passive: { fn: passiveVoice, explanation: 'may be passive voice' },
+    adverb: { fn: matchAdverbs, explanation: 'can weaken meaning' },
+    tooWordy: { fn: isTextWordy, explanation: 'is wordy or unneeded' },
+    cliches: { fn: clichesMatcher, explanation: 'is a cliche' },
+    eprime: { fn: ePrime, explanation: 'is a form of \'to be\'' }
 };
 
-// User must explicitly opt-in
 const disabledChecks = {
-  eprime: false
+    eprime: false
 };
 
 function filter(text, suggestions, whitelistTerms = []) {
-  const whitelistSlices = whitelistTerms.reduce((memo, term) => {
-    let index = text.indexOf(term);
-    while (index > 0) {
-      memo.push({ from: index, to: index + term.length });
-      index = text.indexOf(term, index + 1);
-    }
-    return memo;
-  }, []);
+    const whitelistSlices = whitelistTerms.reduce((memo, term) => {
+        let index = text.indexOf(term);
+        while (index > 0) {
+            memo.push({ from: index, to: index + term.length });
+            index = text.indexOf(term, index + 1);
+        }
+        return memo;
+    }, []);
 
-  return suggestions.reduce((memo, suggestion) => {
-    if (!whitelistSlices.find((slice) => {
-      const suggestionFrom = suggestion.index;
-      const suggestionTo = suggestion.index + suggestion.offset;
-      return (
-        // suggestion covers entire whitelist term
-        suggestionFrom <= slice.from && suggestionTo >= slice.to
-      ) || (
-        // suggestion starts within whitelist term
-        suggestionFrom >= slice.from && suggestionFrom <= slice.to
-      ) || (
-        // suggestion ends within whitelist term
-        suggestionTo >= slice.from && suggestionTo <= slice.to
-      );
-    })) {
-      memo.push(suggestion);
-    }
-    return memo;
-  }, []);
+    return suggestions.reduce((memo, suggestion) => {
+        if (!whitelistSlices.find((slice) => {
+            const suggestionFrom = suggestion.index;
+            const suggestionTo = suggestion.index + suggestion.offset;
+            return (
+                suggestionFrom <= slice.from && suggestionTo >= slice.to
+            ) || (
+                suggestionFrom >= slice.from && suggestionFrom <= slice.to
+            ) || (
+                suggestionTo >= slice.from && suggestionTo <= slice.to
+            );
+        })) {
+            memo.push(suggestion);
+        }
+        return memo;
+    }, []);
 }
 
 function dedup(suggestions) {
-  const dupsHash = {};
+    const dupsHash = {};
 
-  return suggestions.reduce((memo, suggestion) => {
-    const key = `${suggestion.index}:${suggestion.offset}`;
-    if (!dupsHash[key]) {
-      dupsHash[key] = suggestion;
-      memo.push(suggestion);
-    } else {
-      dupsHash[key].reason += ` and ${suggestion.reason.substring(suggestion.offset + 3)}`;
-    }
-    return memo;
-  }, []);
+    return suggestions.reduce((memo, suggestion) => {
+        const key = `${suggestion.index}:${suggestion.offset}`;
+        if (!dupsHash[key]) {
+            dupsHash[key] = suggestion;
+            memo.push(suggestion);
+        } else {
+            dupsHash[key].reason += ` and ${suggestion.reason.substring(suggestion.offset + 3)}`;
+        }
+        return memo;
+    }, []);
 }
 
 function reasonable(text, reason) {
-  return function reasonableSuggestion(suggestion) {
-    // eslint-disable-next-line no-param-reassign
-    suggestion.reason = `"${
-      text.substr(suggestion.index, suggestion.offset)
-    }" ${reason}`;
-    return suggestion;
-  };
+    return function reasonableSuggestion(suggestion) {
+        suggestion.reason = `"${
+            text.substr(suggestion.index, suggestion.offset)
+        }" ${reason}`;
+        return suggestion;
+    };
 }
 
-module.exports = function writeGood(text, opts = {}) {
-  const finalOpts = {};
-  const defaultOpts = Object.assign({}, disabledChecks, opts);
-  Object.keys(defaultOpts).forEach((optKey) => {
-    if (optKey !== 'checks') {
-      finalOpts[optKey] = defaultOpts[optKey];
-    }
-  });
+export default function writeGood(text, opts = {}) {
+    const finalOpts = {};
+    const defaultOpts = Object.assign({}, disabledChecks, opts);
+    Object.keys(defaultOpts).forEach((optKey) => {
+        if (optKey !== 'checks') {
+            finalOpts[optKey] = defaultOpts[optKey];
+        }
+    });
 
-  const finalChecks = opts.checks || defaultChecks;
+    const finalChecks = opts.checks || defaultChecks;
 
-  let suggestions = [];
-  Object.keys(finalChecks).forEach((checkName) => {
-    if (finalOpts[checkName] !== false) {
-      suggestions = suggestions.concat(
-        finalChecks[checkName]
-          .fn(text)
-          .map(reasonable(text, finalChecks[checkName].explanation))
-      );
-    }
-  });
+    let suggestions = [];
+    Object.keys(finalChecks).forEach((checkName) => {
+        if (finalOpts[checkName] !== false) {
+            suggestions = suggestions.concat(
+                finalChecks[checkName]
+                    .fn(text)
+                    .map(reasonable(text, finalChecks[checkName].explanation))
+            );
+        }
+    });
 
-  const filtered = filter(text, suggestions, opts.whitelist);
+    const filtered = filter(text, suggestions, opts.whitelist);
 
-  return dedup(filtered).sort((a, b) => (a.index < b.index ? -1 : 1));
-};
+    return dedup(filtered).sort((a, b) => (a.index < b.index ? -1 : 1));
+}
 
-module.exports.annotate = require('./lib/annotate');
-
-},{"./lib/annotate":1,"./lib/lexical-illusions":2,"./lib/starts-with-so":3,"./lib/there-is":4,"adverb-where":5,"e-prime":7,"no-cliches":8,"passive-voice":10,"too-wordy":12,"weasel-words":13}]},{},[14])(14)
-});
+writeGood.annotate = annotate;
