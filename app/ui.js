@@ -8,9 +8,15 @@ export function removeError() {
 export function displayError(message) {
     let el = document.createElement('div');
     el.id = "errors";
+    el.role = "alert";
+    el.tabIndex = 0;
     el.innerText = message;
     el.onclick = removeError;
+    el.onkeydown = (e) => {
+        if (e.key === 'Enter' || e.key === 'Escape') removeError();
+    };
     document.querySelector('body').appendChild(el);
+    el.focus();
 }
 
 export function dismissDismissablePanels() {
@@ -27,9 +33,11 @@ export function openDismissablePanel(id) {
     let el = document.createElement('div');
     el.classList = 'dismissable';
 
-    let closeEl = document.createElement('span');
-    closeEl.innerHTML = 'x';
+    let closeEl = document.createElement('button');
+    closeEl.type = 'button';
+    closeEl.textContent = 'x';
     closeEl.classList = 'close';
+    closeEl.setAttribute('aria-label', 'Close panel');
     closeEl.onclick = dismissDismissablePanels;
     el.appendChild(closeEl);
 
@@ -40,16 +48,15 @@ export function openDismissablePanel(id) {
     document.querySelector('main').appendChild(el);
 }
 
-function makeToolLink(label, tool, scratchpad) {
-    let a = document.createElement('a');
-    a.innerText = label;
-    a.href = "#";
-    a.onclick = async (e) => {
-        e.preventDefault();
+function makeToolButton(label, tool, scratchpad) {
+    let btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = label;
+    btn.onclick = async () => {
         await tool.action(scratchpad);
         save(scratchpad);
     };
-    return a;
+    return btn;
 }
 
 export function renderTools(tools, scratchpad) {
@@ -58,9 +65,9 @@ export function renderTools(tools, scratchpad) {
 
     tools.forEach(tool => {
         if (tool.footer) {
-            toolsEl.appendChild(makeToolLink("~" + tool.name + "   ", tool, scratchpad));
+            toolsEl.appendChild(makeToolButton("~" + tool.name + "   ", tool, scratchpad));
         }
-        sidebarEl.appendChild(makeToolLink("~" + tool.name, tool, scratchpad));
+        sidebarEl.appendChild(makeToolButton("~" + tool.name, tool, scratchpad));
     });
 
     toolsEl.appendChild(document.createElement("br"));

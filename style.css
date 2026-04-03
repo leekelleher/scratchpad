@@ -85,6 +85,13 @@ textarea.placeholder {
     top: 5px;
     right: 5px;
     cursor: pointer;
+    background: none;
+    border: none;
+    font: inherit;
+    color: inherit;
+    padding: 4px 8px;
+    min-width: 24px;
+    min-height: 24px;
 }
 
 .highlight {
@@ -106,6 +113,23 @@ p {
     color: #868e96;
 }
 
+#tools button,
+#sidebar button {
+    background: none;
+    border: none;
+    font: inherit;
+    color: #268bd2;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: none;
+}
+
+#tools button:hover,
+#sidebar button:hover {
+    font-weight: bold;
+    transition-duration: 0.1s;
+}
+
 #sidebar {
     display: none;
     position: absolute;
@@ -114,7 +138,7 @@ p {
     padding: 2em;
 }
 
-#sidebar a {
+#sidebar button {
     display: block;
 }
 
