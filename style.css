@@ -54,34 +54,41 @@ body {
     color: white;
 }
 
-a,
-a:visited {
+a {
     color: var(--color-link);
     text-decoration: none;
+
+    &:visited {
+        color: var(--color-link);
+    }
+
+    &:hover {
+        font-weight: bold;
+        transition-duration: 0.1s;
+    }
 }
 
-a:hover {
-    font-weight: bold;
-    transition-duration: 0.1s;
+main {
+    display: flex;
+    justify-content: center;
+    width: 96%;
+    max-width: 74em;
+    margin: 0 auto;
+
+    & > * {
+        flex: 1 1 0;
+        height: 90vh;
+        overflow: auto;
+        box-sizing: border-box;
+    }
 }
 
-main,
 footer {
     display: flex;
     justify-content: center;
     width: 96%;
     max-width: 74em;
     margin: 0 auto;
-}
-
-main>* {
-    flex: 1 1 0;
-    height: 90vh;
-    overflow: auto;
-    box-sizing: border-box;
-}
-
-footer {
     height: 6vh;
     justify-content: space-between;
 }
@@ -97,27 +104,23 @@ textarea {
     color: inherit;
 }
 
-textarea.placeholder {
-    opacity: 0.7;
-}
-
 .dismissable {
     position: relative;
     padding: 2em;
-}
 
-.dismissable .close {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    cursor: pointer;
-    background: none;
-    border: none;
-    font: inherit;
-    color: inherit;
-    padding: 4px 8px;
-    min-width: 24px;
-    min-height: 24px;
+    & .close {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        font: inherit;
+        color: inherit;
+        padding: 4px 8px;
+        min-width: 24px;
+        min-height: 24px;
+    }
 }
 
 .highlight {
@@ -145,8 +148,7 @@ p {
     color: var(--color-hint);
 }
 
-#tools button,
-#sidebar button {
+:is(#tools, #sidebar) button {
     background: none;
     border: none;
     font: inherit;
@@ -154,17 +156,15 @@ p {
     cursor: pointer;
     padding: 0;
     text-decoration: none;
-}
 
-#tools button::before,
-#sidebar button::before {
-    content: '~';
-}
+    &::before {
+        content: '~';
+    }
 
-#tools button:hover,
-#sidebar button:hover {
-    font-weight: bold;
-    transition-duration: 0.1s;
+    &:hover {
+        font-weight: bold;
+        transition-duration: 0.1s;
+    }
 }
 
 #sidebar {
@@ -176,19 +176,19 @@ p {
     top: 0;
     right: 0;
     padding: 2em;
-}
 
-#sidebar[aria-hidden="false"] {
-    display: flex;
+    &[aria-hidden="false"] {
+        display: flex;
+    }
 }
 
 #markdownOutput {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
 
-#markdownOutput code,
-#markdownOutput pre {
-    font-family: monospace;
+    & code,
+    & pre {
+        font-family: monospace;
+    }
 }
 
 .hljs {
@@ -202,18 +202,6 @@ p {
 .hljs-comment,
 .hljs-quote {
     color: var(--color-hljs-comment);
-}
-
-.outlook-md {
-    font-family: 'Calibri', sans-serif;
-    background-color: white;
-    color: black;
-}
-
-.outlook-md blockquote {
-    border-left: 3px solid #ccc;
-    padding-left: 1em;
-    margin-left: 1em;
 }
 
 /* Solarized Green */
@@ -303,49 +291,65 @@ p {
 /* --- Balloon tooltips (write-good) --- */
 
 [aria-label][data-balloon-pos] {
-  position: relative;
-  cursor: pointer; }
-  [aria-label][data-balloon-pos]:after {
-    opacity: 0;
-    pointer-events: none;
-    transition: all .18s ease-out .18s;
-    text-indent: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    font-weight: normal;
-    font-style: normal;
-    text-shadow: none;
-    font-size: var(--balloon-font-size);
-    background: var(--balloon-color);
-    border-radius: 2px;
-    color: #fff;
-    content: attr(aria-label);
-    padding: .5em 1em;
-    position: absolute;
-    white-space: nowrap;
-    z-index: 10; }
-  [aria-label][data-balloon-pos]:before {
-    width: 0;
-    height: 0;
-    border: 5px solid transparent;
-    border-bottom-color: var(--balloon-color);
-    opacity: 0;
-    pointer-events: none;
-    transition: all .18s ease-out .18s;
-    content: "";
-    position: absolute;
-    z-index: 10; }
-  [aria-label][data-balloon-pos]:hover:before, [aria-label][data-balloon-pos]:hover:after {
-    opacity: 1;
-    pointer-events: none; }
-  [aria-label][data-balloon-pos][data-balloon-pos="down-left"]:after {
-    left: 0;
-    margin-top: 10px;
-    top: 100%;
-    transform: translate(0, calc(var(--balloon-move) * -1)); }
-  [aria-label][data-balloon-pos][data-balloon-pos="down-left"]:before {
-    left: 5px;
-    top: 100%;
-    transform: translate(0, calc(var(--balloon-move) * -1)); }
-  [aria-label][data-balloon-pos][data-balloon-pos="down-left"]:hover:after,
-  [aria-label][data-balloon-pos][data-balloon-pos="down-left"]:hover:before {
-    transform: translate(0, 0); }
+    position: relative;
+    cursor: pointer;
+
+    &::after {
+        opacity: 0;
+        pointer-events: none;
+        transition: all .18s ease-out .18s;
+        text-indent: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        font-weight: normal;
+        font-style: normal;
+        text-shadow: none;
+        font-size: var(--balloon-font-size);
+        background: var(--balloon-color);
+        border-radius: 2px;
+        color: #fff;
+        content: attr(aria-label);
+        padding: .5em 1em;
+        position: absolute;
+        white-space: nowrap;
+        z-index: 10;
+    }
+
+    &::before {
+        width: 0;
+        height: 0;
+        border: 5px solid transparent;
+        border-bottom-color: var(--balloon-color);
+        opacity: 0;
+        pointer-events: none;
+        transition: all .18s ease-out .18s;
+        content: "";
+        position: absolute;
+        z-index: 10;
+    }
+
+    &:hover::before,
+    &:hover::after {
+        opacity: 1;
+        pointer-events: none;
+    }
+
+    &[data-balloon-pos="down-left"] {
+        &::after {
+            left: 0;
+            margin-top: 10px;
+            top: 100%;
+            transform: translate(0, calc(var(--balloon-move) * -1));
+        }
+
+        &::before {
+            left: 5px;
+            top: 100%;
+            transform: translate(0, calc(var(--balloon-move) * -1));
+        }
+
+        &:hover::after,
+        &:hover::before {
+            transform: translate(0, 0);
+        }
+    }
+}
