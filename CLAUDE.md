@@ -14,33 +14,49 @@ Serve with `npx serve` and open in a browser. A local server is required for ES 
 
 ## Architecture
 
-- **`index.html`** — Single page entry point. Loads a single stylesheet (`style.css`) and a single ES module (`app/index.js`).
+- **`index.html`** — Single page entry point. Loads a single stylesheet (`style.css`) and a single ES module (`app/index.js`). Uses semantic HTML (`<nav>`, `<main>`, `<footer>`) with ARIA attributes.
 - **`app/`** — Core application modules:
-  - **`index.js`** — Entry point: imports all tool modules, wires up init, binds global keyboard shortcuts (Ctrl+Shift+K for sidebar).
-  - **`storage.js`** — `load()` / `save()` for localStorage persistence (content + day/night mode).
-  - **`editor.js`** — Text manipulation helpers (`getLineNumber`, `replaceSelection`, indent/unindent) and keyboard handling (Tab, Enter auto-indent/list continuation, Ctrl+]/[).
-  - **`ui.js`** — Tool rendering (`makeToolLink`, `renderTools`), error display, dismissable panel system.
-- **`tools/`** — Each tool is an ES module in its own sub-directory (`tools/*/index.js`). Vendor libraries are co-located with the tools that use them.
-- **`style.css`** — Solarized light/dark theme, highlight.js syntax theme, balloon tooltips, print styles.
+  - **`index.js`** — Entry point: defines the tool registry (metadata + lazy import functions), wires up init, binds global keyboard shortcuts (Ctrl+Shift+K for sidebar, Ctrl+S for download).
+  - **`storage.js`** — `load()` / `save()` for localStorage persistence (content + color scheme). Migrates legacy `"day"`/`"night"` values to `"light"`/`"dark"`.
+  - **`editor.js`** — Text manipulation helpers (`getLineNumber`, `replaceSelection`, `wrapSelection`, indent/unindent) and keyboard handling (Tab, Enter auto-indent/list continuation, Ctrl+]/[, Ctrl+B bold, Ctrl+I italic). Manages edit mode (Escape to exit, allowing Tab to navigate focus).
+  - **`ui.js`** — Tool rendering (`makeToolButton`, `renderTools`), error display (`role="alert"`, keyboard-dismissible), dismissable panel system. Uses `<button>` elements for all interactive controls.
+- **`tools/`** — Each tool is an ES module in its own sub-directory (`tools/*/index.js`), lazy-loaded on first use via dynamic `import()`. Vendor libraries are co-located with the tools that use them.
+- **`style.css`** — Uses CSS custom properties with `light-dark()` for theming (Solarized palette), CSS nesting, `:is()` selectors. Includes highlight.js syntax theme, balloon tooltips, and print styles.
 
-## Tool Interface
+## Tool Registry
 
-Each tool module exports a default object:
+Tools are defined in the `tools` array in `app/index.js` as plain data with a lazy import function:
 
 ```js
-export default {
-    name: 'tool-name',        // required: identifier and display label
-    action(textarea) { ... }, // required: receives the <textarea> element (may be async)
-    description: '...',       // optional: help text
-    footer: true,             // optional: show in footer bar
-};
+{ name: 'tool-name', footer: true, action: () => import('../tools/tool-name/index.js') }
+```
+
+Each tool module exports a default function that receives the `<textarea>` element:
+
+```js
+export default function(scratchpad) { ... }
 ```
 
 ## Key Patterns
 
+- Tool modules are lazy-loaded — `import()` is called on first use, browser caches subsequent calls.
 - Tools that insert at cursor position import `replaceSelection()` from `app/editor.js`.
 - Tools that need error display import `displayError()` from `app/ui.js`.
 - Tools with toggle panels (markdown, write-good) use `openDismissablePanel()` / `dismissDismissablePanels()` from `app/ui.js` and set `scratchpad.onsave` for live updates.
 - The `marked` instance is created and exported from `tools/markdown/index.js` and re-used by `tools/copy-formatted/index.js`.
-- Heavy dependencies (Prettier) are lazy-loaded via dynamic `import()` on first use.
-- Keyboard shortcuts for the textarea are handled in `app/editor.js` (`handleKeyDown`); global shortcuts use a document-level listener in `app/index.js`.
+- Color scheme uses CSS `color-scheme` property on `:root`, toggled via `document.documentElement.style.colorScheme`. No body classes.
+- Edit mode: the textarea intercepts Tab only when in edit mode (entered by clicking or typing). Pressing Escape exits edit mode, allowing normal Tab focus navigation.
+- Sidebar visibility is driven by `aria-hidden` attribute, with CSS `#sidebar[aria-hidden="false"] { display: flex; }`.
+
+## Keyboard Shortcuts
+
+| Shortcut | Scope | Action |
+|----------|-------|--------|
+| Tab / Shift+Tab | Textarea (edit mode) | Indent / unindent |
+| Ctrl+] / Ctrl+[ | Textarea | Indent / unindent current line |
+| Ctrl+B | Textarea | Toggle bold (`**`) |
+| Ctrl+I | Textarea | Toggle italic (`_`) |
+| Ctrl+S | Global | Download scratchpad content |
+| Ctrl+Shift+K | Global | Toggle sidebar |
+| Escape | Textarea | Exit edit mode |
+| Enter | Textarea | Auto-indent, continue list (unordered and ordered) |
