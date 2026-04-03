@@ -65,11 +65,14 @@ export function renderTools(tools, scratchpad) {
 
     tools.forEach(tool => {
         if (tool.footer) {
-            toolsEl.appendChild(makeToolButton("~" + tool.name + "   ", tool, scratchpad));
+            toolsEl.appendChild(makeToolButton(tool.name, tool, scratchpad));
         }
-        sidebarEl.appendChild(makeToolButton("~" + tool.name, tool, scratchpad));
+        sidebarEl.appendChild(makeToolButton(tool.name, tool, scratchpad));
     });
 
-    toolsEl.appendChild(document.createElement("br"));
-    toolsEl.appendChild(document.createTextNode("(sidebar: cmd+shift+k)"));
+    let hint = document.createElement('span');
+    hint.textContent = "(sidebar: cmd+shift+k)";
+    hint.style.width = "100%";
+		hint.style.textAlign = "right";
+    toolsEl.appendChild(hint);
 }

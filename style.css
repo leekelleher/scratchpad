@@ -109,7 +109,10 @@ p {
 }
 
 #tools {
-    text-align: right;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.75em;
     color: #868e96;
     margin-top: 0;
     margin-bottom: 1.4em;
@@ -124,6 +127,11 @@ p {
     cursor: pointer;
     padding: 0;
     text-decoration: none;
+}
+
+#tools button::before,
+#sidebar button::before {
+    content: '~';
 }
 
 #tools button:hover,
