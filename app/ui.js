@@ -71,7 +71,7 @@ export function renderTools(tools, scratchpad) {
     const sidebarEl = document.getElementById("sidebar");
 
     tools.forEach(tool => {
-        if (tool.footer) {
+        if (tool.toolbar) {
             toolsEl.appendChild(makeToolButton(tool.name, tool, scratchpad));
         }
         // Sidebar always gets text buttons (strip icon so makeToolButton uses text path)
