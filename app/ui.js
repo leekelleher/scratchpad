@@ -35,7 +35,7 @@ export function openDismissablePanel(id) {
 
     const closeEl = document.createElement('button');
     closeEl.type = 'button';
-    closeEl.textContent = 'x';
+    closeEl.innerHTML = '<svg aria-hidden="true" focusable="false" width="16" height="16"><use href="#icon-xmark"></use></svg>';
     closeEl.classList = 'close';
     closeEl.setAttribute('aria-label', 'Close panel');
     closeEl.onclick = dismissDismissablePanels;
@@ -51,7 +51,30 @@ export function openDismissablePanel(id) {
 function makeToolButton(label, tool, scratchpad) {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.textContent = label;
+    if (tool.icon) {
+        btn.setAttribute('aria-label', tool.label || label);
+        btn.setAttribute('data-tooltip-pos', 'down-right');
+        btn.innerHTML = `<svg aria-hidden="true" focusable="false" width="16" height="16"><use href="#${tool.icon}"></use></svg>`;
+    } else {
+        btn.textContent = label;
+    }
+    btn.onclick = async () => {
+        const { default: action } = await tool.action();
+        await action(scratchpad);
+        save(scratchpad);
+    };
+    return btn;
+}
+
+function makeSidebarButton(label, tool, scratchpad) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    if (tool.icon) {
+        btn.innerHTML = `<svg aria-hidden="true" focusable="false" width="1em" height="1em"><use href="#${tool.icon}"></use></svg>`;
+        btn.appendChild(document.createTextNode(label));
+    } else {
+        btn.textContent = label;
+    }
     btn.onclick = async () => {
         const { default: action } = await tool.action();
         await action(scratchpad);
@@ -65,9 +88,9 @@ export function renderTools(tools, scratchpad) {
     const sidebarEl = document.getElementById("sidebar");
 
     tools.forEach(tool => {
-        if (tool.footer) {
+        if (tool.toolbar) {
             toolsEl.appendChild(makeToolButton(tool.name, tool, scratchpad));
         }
-        sidebarEl.appendChild(makeToolButton(tool.name, tool, scratchpad));
+        sidebarEl.appendChild(makeSidebarButton(tool.label || tool.name, tool, scratchpad));
     });
 }

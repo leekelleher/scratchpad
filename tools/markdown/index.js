@@ -10,7 +10,15 @@ export const marked = new Marked(
             const language = hljs.getLanguage(lang) ? lang : 'plaintext';
             return hljs.highlight(code, { language }).value;
         }
-    })
+    }),
+    {
+        renderer: {
+            link({ href, title, text }) {
+                const titleAttr = title ? ` title="${title}"` : '';
+                return `<a href="${href}"${titleAttr} target="_blank">${text}</a>`;
+            }
+        }
+    }
 );
 
 function updateMarkdown(scratchpad) {

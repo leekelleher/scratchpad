@@ -10,7 +10,7 @@ function updateWriteGood(scratchpad) {
 
     for (let r of results.reverse()) {
         html = html.substring(0, r.index) +
-            "<span class='highlight' aria-label='" + r.reason + "' data-balloon-pos='down-left'>" +
+            "<span class='highlight' aria-label='" + r.reason + "' data-tooltip-pos='down-left'>" +
             html.substring(r.index, r.index + r.offset) +
             "</span>" + html.substring(r.index + r.offset);
     }
