@@ -174,10 +174,6 @@ p {
     padding: 0;
     text-decoration: none;
 
-    &::before {
-        content: '~';
-    }
-
     &:hover {
         font-weight: bold;
         transition-duration: 0.1s;
