@@ -9,11 +9,34 @@ export function getLineNumber(textarea) {
     return textarea.value.substr(0, textarea.selectionStart).split("\n").length - 1;
 }
 
-export function replaceSelection(textarea, value) {
-    var pos = textarea.selectionStart;
-    textarea.value = textarea.value.slice(0, pos) + value + textarea.value.slice(textarea.selectionEnd);
+// Core primitive: writes text at the current selection via the browser's editing
+// pipeline so native undo/redo (Ctrl+Z/Y) works correctly.
+// Falls back to direct .value mutation if execCommand isn't available.
+function insertText(textarea, text) {
     textarea.focus();
-    textarea.setSelectionRange(pos + value.length, pos + value.length);
+    let ok = false;
+    try {
+        ok = document.execCommand('insertText', false, text);
+    } catch { ok = false; }
+    if (!ok) {
+        // Fallback: direct mutation (works, but loses undo — no worse than before)
+        const { selectionStart: s, selectionEnd: e, value } = textarea;
+        textarea.value = value.slice(0, s) + text + value.slice(e);
+        textarea.setSelectionRange(s + text.length, s + text.length);
+    }
+}
+
+// Insert text at the current cursor position / replacing the current selection.
+export function replaceSelection(textarea, value) {
+    insertText(textarea, value);
+}
+
+// Replace the entire textarea content (whole-content transform tools).
+// Cursor lands at end of content after the replacement.
+export function replaceAll(textarea, text) {
+    textarea.focus();
+    textarea.setSelectionRange(0, textarea.value.length);
+    insertText(textarea, text);
 }
 
 function wrapSelection(textarea, wrapper) {
@@ -26,41 +49,43 @@ function wrapSelection(textarea, wrapper) {
     const after = text.slice(end, end + len);
 
     if (before === wrapper && after === wrapper) {
-        textarea.value = text.slice(0, start - len) + text.slice(start, end) + text.slice(end + len);
+        // Unwrap: select the full wrapped span [start-len, end+len] and replace
+        // with just the inner text — one undo entry, selection restored to inner.
+        const inner = text.slice(start, end);
         textarea.focus();
+        textarea.setSelectionRange(start - len, end + len);
+        insertText(textarea, inner);
         textarea.setSelectionRange(start - len, end - len);
     } else {
+        // Wrap: current selection [start, end] gets replaced with wrapper+selected+wrapper.
         const selected = text.slice(start, end);
-        textarea.value = text.slice(0, start) + wrapper + selected + wrapper + text.slice(end);
-        textarea.focus();
-
+        insertText(textarea, wrapper + selected + wrapper);
         if (selected.length > 0) {
             textarea.setSelectionRange(start + len, end + len);
         } else {
-            const cursor = start + len;
-            textarea.setSelectionRange(cursor, cursor);
+            textarea.setSelectionRange(start + len, start + len);
         }
     }
 }
 
 function indentNewline(scratchpad) {
     let lines = scratchpad.value.split("\n");
-    let current_line_number = getLineNumber(scratchpad)
+    let current_line_number = getLineNumber(scratchpad);
     let prev_line = lines[current_line_number - 1];
 
-    if (prev_line.trim().length > 0) {
+    if (prev_line && prev_line.trim().length > 0) {
         let indent = prev_line.length - prev_line.trimLeft().length;
-        let pos = scratchpad.selectionStart;
-        scratchpad.value = scratchpad.value.slice(0, pos) + " ".repeat(indent) + scratchpad.value.slice(pos);
-        scratchpad.setSelectionRange(pos + indent, pos + indent);
+        if (indent > 0) {
+            insertText(scratchpad, " ".repeat(indent));
+        }
     }
 }
 
 function continueListOnNewline(scratchpad) {
     let lines = scratchpad.value.split("\n");
-    let current_line_number = getLineNumber(scratchpad)
-
+    let current_line_number = getLineNumber(scratchpad);
     let prev_line = lines[current_line_number - 1];
+    if (!prev_line) return;
     prev_line = prev_line.trimLeft();
 
     let insert = null;
@@ -75,48 +100,38 @@ function continueListOnNewline(scratchpad) {
     }
 
     if (insert) {
-        let pos = scratchpad.selectionStart;
-        scratchpad.value = scratchpad.value.slice(0, pos) + insert + scratchpad.value.slice(pos);
-        scratchpad.setSelectionRange(pos + insert.length, pos + insert.length);
+        insertText(scratchpad, insert);
     }
 }
 
 export function indentCurrentLine(scratchpad) {
-    let pos = scratchpad.selectionStart;
-    let lines = scratchpad.value.split("\n");
-    let current_line_number = getLineNumber(scratchpad);
-
-    let line = lines[current_line_number];
-    line = "  " + line;
-    lines[current_line_number] = line;
-
-    scratchpad.value = lines.join('\n');
+    const pos = scratchpad.selectionStart;
+    const lineStart = scratchpad.value.lastIndexOf('\n', pos - 1) + 1;
+    scratchpad.focus();
+    scratchpad.setSelectionRange(lineStart, lineStart);
+    insertText(scratchpad, '  ');
     scratchpad.setSelectionRange(pos + 2, pos + 2);
 }
 
 export function unindentCurrentLine(scratchpad) {
-    let pos = scratchpad.selectionStart;
-    let lines = scratchpad.value.split("\n");
-    let current_line_number = getLineNumber(scratchpad);
-
-    let line = lines[current_line_number];
-    let line_length = line.length;
-
-    line = line[0] === " " ? line.substring(1) : line;
-    line = line[0] === " " ? line.substring(1) : line
-    let length_change = line_length - line.length;
-    lines[current_line_number] = line;
-
-    scratchpad.value = lines.join('\n');
-    scratchpad.setSelectionRange(pos - length_change, pos - length_change);
+    const pos = scratchpad.selectionStart;
+    const text = scratchpad.value;
+    const lineStart = text.lastIndexOf('\n', pos - 1) + 1;
+    let spaces = 0;
+    if (text[lineStart] === ' ') spaces++;
+    if (spaces === 1 && text[lineStart + 1] === ' ') spaces++;
+    if (spaces === 0) return;
+    scratchpad.focus();
+    scratchpad.setSelectionRange(lineStart, lineStart + spaces);
+    insertText(scratchpad, '');
+    scratchpad.setSelectionRange(pos - spaces, pos - spaces);
 }
 
 function handleTab(e, scratchpad) {
-    let pos = scratchpad.selectionStart;
-
+    const pos = scratchpad.selectionStart;
     if (!e.shiftKey) {
-        scratchpad.value = scratchpad.value.slice(0, pos) + "  " + scratchpad.value.slice(pos);
-        scratchpad.setSelectionRange(pos + 2, pos + 2);
+        scratchpad.setSelectionRange(pos, pos);
+        insertText(scratchpad, '  ');
     } else {
         unindentCurrentLine(scratchpad);
     }

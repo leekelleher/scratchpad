@@ -1,3 +1,5 @@
+import { replaceAll } from '../../app/editor.js';
+
 function shuffle(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
 
@@ -16,5 +18,5 @@ function shuffle(array) {
 export default function(scratchpad) {
     let lines = scratchpad.value.split("\n");
     lines = shuffle(lines);
-    scratchpad.value = lines.join("\n");
+    replaceAll(scratchpad, lines.join("\n"));
 }
