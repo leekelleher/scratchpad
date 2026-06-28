@@ -73,9 +73,6 @@ a {
 main {
     display: flex;
     justify-content: center;
-    width: 96%;
-    max-width: 74em;
-    margin: 0 auto;
 
     & > * {
         flex: 1 1 0;
