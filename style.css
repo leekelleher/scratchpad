@@ -406,7 +406,9 @@ header nav a {
     }
 
     &:hover::before,
-    &:hover::after {
+    &:hover::after,
+    &:focus-visible::before,
+    &:focus-visible::after {
         opacity: 1;
         pointer-events: none;
     }
@@ -414,7 +416,7 @@ header nav a {
     &[data-balloon-pos="down-left"] {
         &::after {
             left: 0;
-            margin-top: 10px;
+            margin-top: 9px;
             top: 100%;
             transform: translate(0, calc(var(--balloon-move) * -1));
         }
@@ -426,7 +428,9 @@ header nav a {
         }
 
         &:hover::after,
-        &:hover::before {
+        &:hover::before,
+        &:focus-visible::after,
+        &:focus-visible::before {
             transform: translate(0, 0);
         }
     }
@@ -434,7 +438,7 @@ header nav a {
     &[data-balloon-pos="down-right"] {
         &::after {
             right: 0;
-            margin-top: 10px;
+            margin-top: 9px;
             top: 100%;
             transform: translate(0, calc(var(--balloon-move) * -1));
         }
@@ -446,7 +450,9 @@ header nav a {
         }
 
         &:hover::after,
-        &:hover::before {
+        &:hover::before,
+        &:focus-visible::after,
+        &:focus-visible::before {
             transform: translate(0, 0);
         }
     }
