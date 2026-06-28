@@ -430,4 +430,24 @@ header nav a {
             transform: translate(0, 0);
         }
     }
+
+    &[data-balloon-pos="down-right"] {
+        &::after {
+            right: 0;
+            margin-top: 10px;
+            top: 100%;
+            transform: translate(0, calc(var(--balloon-move) * -1));
+        }
+
+        &::before {
+            right: 5px;
+            top: 100%;
+            transform: translate(0, calc(var(--balloon-move) * -1));
+        }
+
+        &:hover::after,
+        &:hover::before {
+            transform: translate(0, 0);
+        }
+    }
 }

@@ -52,8 +52,8 @@ function makeToolButton(label, tool, scratchpad) {
     const btn = document.createElement('button');
     btn.type = 'button';
     if (tool.icon) {
-        btn.setAttribute('aria-label', label);
-        btn.setAttribute('data-balloon-pos', 'down-left');
+        btn.setAttribute('aria-label', tool.label || label);
+        btn.setAttribute('data-balloon-pos', 'down-right');
         btn.innerHTML = `<svg aria-hidden="true" focusable="false" width="16" height="16"><use href="#${tool.icon}"></use></svg>`;
     } else {
         btn.textContent = label;
