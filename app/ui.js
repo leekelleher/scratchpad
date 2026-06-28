@@ -53,7 +53,7 @@ function makeToolButton(label, tool, scratchpad) {
     btn.type = 'button';
     if (tool.icon) {
         btn.setAttribute('aria-label', tool.label || label);
-        btn.setAttribute('data-balloon-pos', 'down-right');
+        btn.setAttribute('data-tooltip-pos', 'down-right');
         btn.innerHTML = `<svg aria-hidden="true" focusable="false" width="16" height="16"><use href="#${tool.icon}"></use></svg>`;
     } else {
         btn.textContent = label;

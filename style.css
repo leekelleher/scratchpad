@@ -24,9 +24,9 @@
 	--color-hljs-red: #dc322f;
 
 	/* Balloon tooltips (write-good) */
-	--balloon-color: rgba(16, 16, 16, 0.95);
-	--balloon-font-size: 12px;
-	--balloon-move: 4px;
+	--tooltip-color: rgba(16, 16, 16, 0.95);
+	--tooltip-font-size: 12px;
+	--tooltip-move: 4px;
 
 	--toolbar-height: 2.5rem;
 }
@@ -385,9 +385,9 @@ header nav a {
 	}
 }
 
-/* --- Balloon tooltips (write-good) --- */
+/* --- Tooltips --- */
 
-[aria-label][data-balloon-pos] {
+[aria-label][data-tooltip-pos] {
 	position: relative;
 	cursor: pointer;
 
@@ -402,8 +402,8 @@ header nav a {
 		font-weight: normal;
 		font-style: normal;
 		text-shadow: none;
-		font-size: var(--balloon-font-size);
-		background: var(--balloon-color);
+		font-size: var(--tooltip-font-size);
+		background: var(--tooltip-color);
 		border-radius: 2px;
 		color: #fff;
 		content: attr(aria-label);
@@ -417,7 +417,7 @@ header nav a {
 		width: 0;
 		height: 0;
 		border: 5px solid transparent;
-		border-bottom-color: var(--balloon-color);
+		border-bottom-color: var(--tooltip-color);
 		opacity: 0;
 		pointer-events: none;
 		transition: all 0.18s ease-out 0.18s;
@@ -434,18 +434,18 @@ header nav a {
 		pointer-events: none;
 	}
 
-	&[data-balloon-pos="down-left"] {
+	&[data-tooltip-pos="down-left"] {
 		&::after {
 			left: 0;
 			margin-top: 9px;
 			top: 100%;
-			transform: translate(0, calc(var(--balloon-move) * -1));
+			transform: translate(0, calc(var(--tooltip-move) * -1));
 		}
 
 		&::before {
 			left: 5px;
 			top: 100%;
-			transform: translate(0, calc(var(--balloon-move) * -1));
+			transform: translate(0, calc(var(--tooltip-move) * -1));
 		}
 
 		&:hover::after,
@@ -456,18 +456,18 @@ header nav a {
 		}
 	}
 
-	&[data-balloon-pos="down-right"] {
+	&[data-tooltip-pos="down-right"] {
 		&::after {
 			right: 0;
 			margin-top: 9px;
 			top: 100%;
-			transform: translate(0, calc(var(--balloon-move) * -1));
+			transform: translate(0, calc(var(--tooltip-move) * -1));
 		}
 
 		&::before {
 			right: 5px;
 			top: 100%;
-			transform: translate(0, calc(var(--balloon-move) * -1));
+			transform: translate(0, calc(var(--tooltip-move) * -1));
 		}
 
 		&:hover::after,
