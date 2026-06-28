@@ -102,11 +102,13 @@ textarea {
     outline: none;
     background-color: inherit;
     color: inherit;
+		scrollbar-width: thin;
 }
 
 .dismissable {
     position: relative;
     padding: 2em;
+		scrollbar-width: thin;
 
     & .close {
         position: absolute;
