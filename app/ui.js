@@ -51,7 +51,13 @@ export function openDismissablePanel(id) {
 function makeToolButton(label, tool, scratchpad) {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.textContent = label;
+    if (tool.icon) {
+        btn.setAttribute('aria-label', label);
+        btn.setAttribute('data-balloon-pos', 'down-left');
+        btn.innerHTML = `<svg aria-hidden="true" focusable="false" width="16" height="16"><use href="#${tool.icon}"></use></svg>`;
+    } else {
+        btn.textContent = label;
+    }
     btn.onclick = async () => {
         const { default: action } = await tool.action();
         await action(scratchpad);
@@ -68,6 +74,7 @@ export function renderTools(tools, scratchpad) {
         if (tool.footer) {
             toolsEl.appendChild(makeToolButton(tool.name, tool, scratchpad));
         }
-        sidebarEl.appendChild(makeToolButton(tool.name, tool, scratchpad));
+        // Sidebar always gets text buttons (strip icon so makeToolButton uses text path)
+        sidebarEl.appendChild(makeToolButton(tool.name, { ...tool, icon: undefined }, scratchpad));
     });
 }
