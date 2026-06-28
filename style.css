@@ -98,7 +98,7 @@ textarea {
     font-size: inherit;
     line-height: inherit;
     border: 0;
-    padding: 2em;
+    padding: 0 max(2em, calc(50% - 37em)) 2em;
     outline: none;
     background-color: inherit;
     color: inherit;
