@@ -48,3 +48,11 @@ document.addEventListener('keydown', async (e) => {
         download(scratchpad);
     }
 });
+
+// Open External Links in a New Tab
+document.querySelectorAll("a").forEach(function(a) {
+   const href = new URL(a.getAttribute("href"), window.location);
+   if (window.location.origin !== href.origin) {
+       a.setAttribute("target", "_blank");
+   }
+});
