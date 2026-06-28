@@ -75,6 +75,6 @@ export function renderTools(tools, scratchpad) {
             toolsEl.appendChild(makeToolButton(tool.name, tool, scratchpad));
         }
         // Sidebar always gets text buttons (strip icon so makeToolButton uses text path)
-        sidebarEl.appendChild(makeToolButton(tool.name, { ...tool, icon: undefined }, scratchpad));
+        sidebarEl.appendChild(makeToolButton(tool.label || tool.name, { ...tool, icon: undefined }, scratchpad));
     });
 }
