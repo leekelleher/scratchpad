@@ -1,3 +1,5 @@
+import { replaceAll } from '../../app/editor.js';
+
 export default function(scratchpad) {
-    scratchpad.value = atob(scratchpad.value);
+    replaceAll(scratchpad, atob(scratchpad.value));
 }

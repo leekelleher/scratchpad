@@ -1,3 +1,5 @@
+import { replaceAll } from '../../app/editor.js';
+
 export default function(scratchpad) {
-    scratchpad.value = btoa(scratchpad.value);
+    replaceAll(scratchpad, btoa(scratchpad.value));
 }

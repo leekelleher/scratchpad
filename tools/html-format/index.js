@@ -1,3 +1,5 @@
+import { replaceAll } from '../../app/editor.js';
+
 let prettier, prettierHtml;
 
 export default async function(scratchpad) {
@@ -11,5 +13,5 @@ export default async function(scratchpad) {
         parser: 'html',
         plugins: [prettierHtml]
     });
-    scratchpad.value = formatted;
+    replaceAll(scratchpad, formatted);
 }
