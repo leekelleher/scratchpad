@@ -66,6 +66,23 @@ function makeToolButton(label, tool, scratchpad) {
     return btn;
 }
 
+function makeSidebarButton(label, tool, scratchpad) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    if (tool.icon) {
+        btn.innerHTML = `<svg aria-hidden="true" focusable="false" width="1em" height="1em"><use href="#${tool.icon}"></use></svg>`;
+        btn.appendChild(document.createTextNode(label));
+    } else {
+        btn.textContent = label;
+    }
+    btn.onclick = async () => {
+        const { default: action } = await tool.action();
+        await action(scratchpad);
+        save(scratchpad);
+    };
+    return btn;
+}
+
 export function renderTools(tools, scratchpad) {
     const toolsEl = document.getElementById("tools");
     const sidebarEl = document.getElementById("sidebar");
@@ -74,7 +91,6 @@ export function renderTools(tools, scratchpad) {
         if (tool.toolbar) {
             toolsEl.appendChild(makeToolButton(tool.name, tool, scratchpad));
         }
-        // Sidebar always gets text buttons (strip icon so makeToolButton uses text path)
-        sidebarEl.appendChild(makeToolButton(tool.label || tool.name, { ...tool, icon: undefined }, scratchpad));
+        sidebarEl.appendChild(makeSidebarButton(tool.label || tool.name, tool, scratchpad));
     });
 }
