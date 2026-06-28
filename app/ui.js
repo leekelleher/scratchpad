@@ -35,7 +35,7 @@ export function openDismissablePanel(id) {
 
     const closeEl = document.createElement('button');
     closeEl.type = 'button';
-    closeEl.textContent = 'x';
+    closeEl.innerHTML = '<svg aria-hidden="true" focusable="false" width="16" height="16"><use href="#icon-xmark"></use></svg>';
     closeEl.classList = 'close';
     closeEl.setAttribute('aria-label', 'Close panel');
     closeEl.onclick = dismissDismissablePanels;
